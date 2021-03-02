@@ -1,5 +1,10 @@
-import React, { Component, lazy, useState, useEffect } from 'react';
-import { useHistory, useParams, useLocation } from 'react-router-dom';
+import React, { Component, lazy, useState, useEffect, match } from 'react';
+import {
+  useHistory,
+  useParams,
+  useLocation,
+  useRouteMatch,
+} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Route, Switch } from 'react-router-dom';
 import Movie from '../../components/Movie/Movie';
@@ -12,7 +17,7 @@ const AdditionalInfo = lazy(() =>
 const Reviews = lazy(() => import('../../components/Reviews/Reviews'));
 const Cast = lazy(() => import('../../components/Cast/Cast'));
 
-const MovieDetailsPage = () => {
+const MovieDetailsPage = props => {
   const [poster, setPoster] = useState('');
   const [genres, setGenres] = useState([]);
 
@@ -23,14 +28,11 @@ const MovieDetailsPage = () => {
   const [vote_average, setVote_average] = useState(0);
   const [overview, setOverview] = useState('');
 
+  const match = useRouteMatch();
   const params = useParams();
   const history = useHistory();
   const location = useLocation();
-
   useEffect(() => {
-    // console.log(params);
-    // console.log(history);
-    // console.log(location);
     getMovieById(params.movieId).then(
       data => (
         setGenres(data.genres),
@@ -67,16 +69,16 @@ const MovieDetailsPage = () => {
         genres={genres}
         poster_path={poster_path}
       />
-      <AdditionalInfo path={'test'} id={id} />
+      <AdditionalInfo path={match.url} id={id} />
       <Switch>
         <Route
-          path={`${path}/cast`}
+          path={`${match.path}/cast`}
           render={props => {
             return <Cast {...props} id={id} />;
           }}
         />
         <Route
-          path={`${location.pathname}/reviews`}
+          path={`${match.path}/reviews`}
           render={props => {
             return <Reviews {...props} />;
           }}
